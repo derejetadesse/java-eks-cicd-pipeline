@@ -1,0 +1,16 @@
+---
+- name: Deploy Java Application to AWS EKS
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Update ECR image URI and build tag in deployment manifest
+      replace:
+        path: ../k8s/deployment.yml
+        regexp: 'ECR_REGISTRY_URI:IMAGE_TAG'
+        replace: "{{ ecr_registry }}:{{ build_tag }}"
+
+    - name: Apply Kubernetes Deployment
+      command: kubectl apply -f ../k8s/deployment.yml
+
+    - name: Apply Kubernetes LoadBalancer Service
+      command: kubectl apply -f ../k8s/service.yml
